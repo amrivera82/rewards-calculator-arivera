@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 @Data
 @AllArgsConstructor
 public class CustomerRewardsDto {
-    private CustomerAccountDto customerAccountDto;
+    private Long customerId;
     private ZonedDateTime beginDateTime;
     private ZonedDateTime endDateTime;
     private Integer points;

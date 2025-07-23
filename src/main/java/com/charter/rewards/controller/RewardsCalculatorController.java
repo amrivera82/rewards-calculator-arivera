@@ -6,9 +6,11 @@ import com.charter.rewards.types.CustomerTransactionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,23 +18,30 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestController("/rewards")
+@CrossOrigin("*")
+@RestController
+@RequestMapping("/customer")
 public class RewardsCalculatorController extends BaseRestController {
 
     private final RewardsCalculatorService rewardsCalculatorService;
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllCustomerAccountInfo() {
+        log.debug("Returning all customers.");
+        return ResponseEntity.ok(rewardsCalculatorService.getAllCustomerAccounts());
+    }
+
     /**
-     *
      * @param id
      * @param period
      * @return
      */
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/rewards")
     public ResponseEntity<?> getCustomerRewardsById(final @PathVariable("id") Long id,
                                                     final @RequestParam(name = "months-prev", defaultValue = "3") Integer period) {
         log.info("Received customer rewards request for customer[id]={}, for {}-months' history", id, period);
         final CustomerRewardsSummary customerTransaction = rewardsCalculatorService.getCustomerRewards(id, period);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(customerTransaction);
     }
 
     /**
@@ -47,14 +56,13 @@ public class RewardsCalculatorController extends BaseRestController {
     }
 
     /**
-     *
      * @param id
      * @return
      */
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/transactions")
     public ResponseEntity<?> getCustomerTransactions(final @PathVariable("id") Long id,
                                                      final @RequestParam(name = "months-prev", required = false) Integer period) {
-        final List<CustomerTransactionDto> customerTransaction = rewardsCalculatorService.getAllTransactions(id, period);
-        return ResponseEntity.ok(null);
+        final List<CustomerTransactionDto> customerTransactions = rewardsCalculatorService.getAllTransactions(id, period);
+        return ResponseEntity.ok(customerTransactions);
     }
 }
